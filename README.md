@@ -29,8 +29,30 @@ schema (`layout`, `fills`, `textStyle`, `globalVars`, `elements`,
 
 ## Install
 
-Download a release binary for your platform (`macOS arm64/x86_64`,
-`Linux x86_64/aarch64`), or build from source (Rust stable):
+Latest release via curl (detects macOS/Linux + x86_64/arm64, installs to
+`/usr/local/bin` when writable, otherwise `~/.local/bin`):
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/damian-kolasinski/figma-framelink-cli/main/install.sh | sh
+```
+
+Pinned version or custom directory:
+
+```sh
+curl -fsSL https://raw.githubusercontent.com/damian-kolasinski/figma-framelink-cli/main/install.sh | sh -s -- --version v0.1.0
+curl -fsSL https://raw.githubusercontent.com/damian-kolasinski/figma-framelink-cli/main/install.sh | sh -s -- --dir ~/.local/bin
+```
+
+Or download the tarball directly (one per [release](../../releases)):
+
+```sh
+# macOS arm64 / Linux x86_64 shown; see install.sh for the other targets
+curl -fsSL -o figma.tgz https://github.com/damian-kolasinski/figma-framelink-cli/releases/latest/download/figma-framelink-cli-aarch64-apple-darwin.tar.gz
+tar xzf figma.tgz
+./figma-framelink-cli --help
+```
+
+Build from source (Rust stable):
 
 ```sh
 cargo build --release

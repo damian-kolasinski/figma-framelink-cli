@@ -45,7 +45,11 @@ jobs:
       - name: package
         run: |
           bin=target/${{ matrix.target }}/release/figma-framelink-cli
-          archive=figma-framelink-cli-${{ github.ref_name }}-${{ matrix.target }}.tar.gz
+          # NOTE: asset name intentionally has no version — install.sh and the
+          # README curl snippets rely on the stable URL
+          # .../releases/latest/download/figma-framelink-cli-<target>.tar.gz
+          # (the version is already encoded in the release tag itself).
+          archive=figma-framelink-cli-${{ matrix.target }}.tar.gz
           cp README.md LICENSE "$(dirname "$bin")/"
           tar czf "$archive" -C "$(dirname "$bin")" "$(basename "$bin")" README.md LICENSE
           echo "ARCHIVE=$archive" >> "$GITHUB_ENV"
