@@ -699,33 +699,49 @@ mod tests {
 
     #[test]
     fn repro_app_name_bold() {
-        let raw: Value = serde_json::from_str(
-            &std::fs::read_to_string(
-                "/private/var/folders/lh/jyw7ntc1045f6pv1xs72x7q00000gp/T/opencode/raw-page.json",
-            )
-            .unwrap(),
-        )
-        .unwrap();
-        let doc = &raw["nodes"]["11462:19979"]["document"];
-        let mut target = None;
-        fn find(n: &Value, out: &mut Option<Value>) {
-            if n.get("type").and_then(|v| v.as_str()) == Some("TEXT")
-                && n.get("characters")
-                    .and_then(|v| v.as_str())
-                    .map(|c| c.contains("By granting access"))
-                    .unwrap_or(false)
-                && out.is_none()
-            {
-                *out = Some(n.clone());
-            }
-            if let Some(kids) = n.get("children").and_then(|c| c.as_array()) {
-                for c in kids {
-                    find(c, out);
+        // Regression: Figma omits trailing zero override entries, so
+        // `characterStyleOverrides` (33) is shorter than `characters` (54).
+        // The slice per line must clamp instead of dropping the overrides.
+        let node: Value = serde_json::json!({
+            "type": "TEXT",
+            "characters": "By granting access for [App Name], it will be able to:",
+            "style": {
+                "fontFamily": "DM Sans",
+                "fontPostScriptName": "DMSans-Regular",
+                "fontStyle": "Regular",
+                "fontWeight": 400,
+                "textAutoResize": "HEIGHT",
+                "fontSize": 16.0,
+                "textAlignHorizontal": "LEFT",
+                "textAlignVertical": "TOP",
+                "opentypeFlags": {"SS03": 1, "SS05": 1, "SS07": 1},
+                "letterSpacing": -0.30000001192092896,
+                "lineHeightPx": 24.0,
+                "lineHeightPercent": 115.2073745727539,
+                "lineHeightPercentFontSize": 150.0,
+                "lineHeightUnit": "PIXELS"
+            },
+            "characterStyleOverrides": [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+            "styleOverrideTable": {
+                "1": {
+                    "fontFamily": "DM Sans",
+                    "fontPostScriptName": "DMSans-SemiBold",
+                    "fontStyle": "SemiBold",
+                    "fontWeight": 600,
+                    "textAutoResize": "WIDTH_AND_HEIGHT",
+                    "fontSize": 16.0,
+                    "opentypeFlags": {"SS03": 1, "SS05": 1, "SS07": 1},
+                    "letterSpacing": -0.44999998807907104,
+                    "lineHeightPx": 24.0,
+                    "lineHeightPercent": 115.2073745727539,
+                    "lineHeightPercentFontSize": 150.0,
+                    "lineHeightUnit": "PIXELS",
+                    "inheritTextStyleId": "2904:1800"
                 }
-            }
-        }
-        find(doc, &mut target);
-        let node = target.expect("node found");
+            },
+            "lineTypes": ["NONE"],
+            "lineIndentations": [0]
+        });
         let mut rec = vec![];
         let out = build_formatted_text(&node, &mut reg(&mut rec));
         // Must match upstream exactly (modulo the ts counter, which is
