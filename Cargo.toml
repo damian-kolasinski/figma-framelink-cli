@@ -1,0 +1,36 @@
+[package]
+name = "figma-framelink-cli"
+version = "0.1.0"
+edition = "2024"
+description = "Agent-first CLI port of the Framelink Figma MCP server (figma-developer-mcp): read Figma nodes and download images without running an MCP server."
+license = "MIT"
+repository = "https://github.com/damian-kolasinski/figma-framelink-cli"
+keywords = ["figma", "cli", "agents", "design-to-code"]
+categories = ["command-line-utilities"]
+
+[[bin]]
+name = "figma-framelink-cli"
+path = "src/main.rs"
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive", "env"] }
+dotenvy = "0.15"
+regex = "1"
+reqwest = { version = "0.12", default-features = false, features = ["json", "rustls-tls", "stream"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = { version = "1", features = ["preserve_order", "float_roundtrip"] }
+serde_yaml = "0.9"
+sha1 = "0.10"
+tokio = { version = "1", features = ["full"] }
+url = "2"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg", "gif"] }
+indexmap = "2"
+
+[dev-dependencies]
+tempfile = "3"
+wiremock = "0.6"
+
+[profile.release]
+lto = true
+strip = true
