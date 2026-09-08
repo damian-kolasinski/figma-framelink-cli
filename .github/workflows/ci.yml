@@ -20,16 +20,20 @@ jobs:
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
+    needs: check
+    permissions:
+      contents: write
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: macos-14 # arm64
             target: aarch64-apple-darwin
-          - os: macos-13 # x86_64
+          - os: macos-14 # x86_64 cross from arm64 via Xcode toolchain
             target: x86_64-apple-darwin
           - os: ubuntu-latest
             target: x86_64-unknown-linux-gnu
-          - os: ubuntu-latest
+          - os: ubuntu-24.04-arm # native ARM, avoids cross gcc
             target: aarch64-unknown-linux-gnu
     runs-on: ${{ matrix.os }}
     steps:
