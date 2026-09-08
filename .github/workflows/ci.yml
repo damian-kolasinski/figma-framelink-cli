@@ -46,6 +46,7 @@ jobs:
         run: |
           bin=target/${{ matrix.target }}/release/figma-framelink-cli
           archive=figma-framelink-cli-${{ github.ref_name }}-${{ matrix.target }}.tar.gz
+          cp README.md LICENSE "$(dirname "$bin")/"
           tar czf "$archive" -C "$(dirname "$bin")" "$(basename "$bin")" README.md LICENSE
           echo "ARCHIVE=$archive" >> "$GITHUB_ENV"
       - uses: softprops/action-gh-release@v2
